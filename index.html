@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="my">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mini Market — Liquor Store</title>
+  <style>
+    :root{
+      --accent:#6b2dff;
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --muted:#6b7280;
+    }
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial; margin:0; background:var(--bg); color:#111}
+    header{background:linear-gradient(90deg,var(--accent),#8a5bff); color:white; padding:20px 24px; display:flex; gap:16px; align-items:center; justify-content:space-between}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:8px;background:#fff2;display:flex;align-items:center;justify-content:center;font-weight:700}
+    .search{flex:1;max-width:600px;margin-left:24px}
+    input[type=search]{width:100%;padding:10px 14px;border-radius:10px;border:none;outline:none}
+    main{display:grid;grid-template-columns:270px 1fr 340px;gap:20px;padding:24px}
+    .sidebar{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(11,18,40,0.06)}
+    h2{margin:0 0 12px 0;font-size:16px}
+    .category{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{padding:8px 10px;border-radius:999px;background:#f2f2f6;font-size:13px;cursor:pointer}
+    .chip.active{background:var(--accent);color:white}
+    .products{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px}
+    .card{background:var(--card);padding:12px;border-radius:12px;box-shadow:0 6px 18px rgba(11,18,40,0.04);display:flex;flex-direction:column;gap:8px}
+    .media{height:130px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:#fafafa;overflow:hidden}
+    .media img{max-width:100%;max-height:100%}
+    .title{font-weight:600;font-size:15px}
+    .meta{font-size:13px;color:var(--muted)}
+    .price{font-weight:700}
+    .actions{margin-top:auto;display:flex;gap:8px;align-items:center}
+    button.add{flex:1;padding:8px;border-radius:8px;border:none;background:var(--accent);color:white;cursor:pointer}
+    button.ghost{padding:8px;border-radius:8px;border:1px solid #e5e7eb;background:transparent;cursor:pointer}
+    .cart{position:sticky;top:24px}
+    .cart-items{max-height:420px;overflow:auto;display:flex;flex-direction:column;gap:8px}
+    .cart-row{display:flex;gap:8px;align-items:center;padding:8px;border-radius:8px;background:#fbfbfd}
+    .qty{display:flex;gap:6px;align-items:center}
+    .qty button{width:28px;height:28px;border-radius:6px;border:none;background:#eef2ff;cursor:pointer}
+    .checkout{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+    .empty{padding:28px;text-align:center;color:var(--muted)}
+    footer{padding:20px;text-align:center;color:var(--muted)}
+    @media (max-width:980px){main{grid-template-columns:1fr;padding:16px} .cart{position:static}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">LIQUOR STORE</div>
+      <div>
+        <div style="font-weight:700">Mini Market</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.9)">Liquor Store — alcoholic beverages</div>
+      </div>
+    </div>
+    <div class="search">
+      <input id="search" type="search" placeholder="ရှာမယ် — စာအမည် (ဥပမာ: whisky, beer)" />
+    </div>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="font-size:13px;color:white">Open • Delivery available</div>
+      <button id="open-cart" style="padding:8px 12px;border-radius:8px;border:none;background:white;color:var(--accent);font-weight:600;cursor:pointer">Cart (0)</button>
+    </div>
+  </header>
+
+  <main>
+    <aside class="sidebar">
+      <h2>Categories</h2>
+      <div class="category" id="categories"></div>
+      <hr style="margin:12px 0;border:none;border-top:1px solid #f1f3f8" />
+      <h2>Price</h2>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="min-price" type="number" placeholder="Min" style="flex:1;padding:8px;border-radius:8px;border:1px solid #eef2ff" />
+        <input id="max-price" type="number" placeholder="Max" style="flex:1;padding:8px;border-radius:8px;border:1px solid #eef2ff" />
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button id="apply-filters" class="chip">Apply</button>
+        <button id="clear-filters" class="chip">Clear</button>
+      </div>
+    </aside>
+
+    <section>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2>Products</h2>
+        <div style="color:var(--muted);font-size:14px">Showing <span id="result-count">0</span> items</div>
+      </div>
+      <div class="products" id="products"></div>
+    </section>
+
+    <aside class="sidebar cart">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2>Your Cart</h2>
+        <div id="cart-count">0</div>
+      </div>
+      <div class="cart-items" id="cart-items">
+        <div class="empty">Your cart is empty</div>
+      </div>
+      <div class="checkout">
+        <div>
+          <div style="font-size:13px;color:var(--muted)">Total</div>
+          <div style="font-weight:800;font-size:18px" id="cart-total">0ks</div>
+        </div>
+        <div>
+          <button id="checkout-btn" class="add">Checkout</button>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer>Mini Market — Liquor Store — please obey local laws when selling alcohol.</footer>
+
+  <script>
+    const productsData = [
+      {id:1,name:'Classic Whisky 700ml',category:'Whisky',price:75000,img:'https://via.placeholder.com/320x200?text=Whisky'},
+      {id:2,name:'Premium Vodka 750ml',category:'Vodka',price:25500,img:'https://via.placeholder.com/320x200?text=Vodka'},
+      {id:3,name:'Red Wine 750ml',category:'Wine',price:18000,img:'https://via.placeholder.com/320x200?text=Red+Wine'},
+      {id:4,name:'White Wine 750ml',category:'Wine',price:17500,img:'https://via.placeholder.com/320x200?text=White+Wine'},
+      {id:5,name:'Craft Beer Pack (6)',category:'Beer',price:12000,img:'https://via.placeholder.com/320x200?text=Beer'},
+      {id:6,name:'Rum Gold 700ml',category:'Rum',price:22000,img:'https://via.placeholder.com/320x200?text=Rum'},
+      {id:7,name:'Gin Tonic Bundle',category:'Gin',price:20000,img:'https://via.placeholder.com/320x200?text=Gin'},
+      {id:8,name:'Champagne 750ml',category:'Sparkling',price:45000,img:'https://via.placeholder.com/320x200?text=Champagne'}
+    ];
+
+    const state = { products: productsData, filtered: [...productsData], cart: {} };
+
+    const productsEl = document.getElementById('products');
+    const categoriesEl = document.getElementById('categories');
+    const resultCount = document.getElementById('result-count');
+    const searchEl = document.getElementById('search');
+    const cartItemsEl = document.getElementById('cart-items');
+    const cartCountEl = document.getElementById('cart-count');
+    const cartTotalEl = document.getElementById('cart-total');
+    const openCartBtn = document.getElementById('open-cart');
+
+    function renderCategories(){
+      const cats = Array.from(new Set(state.products.map(p=>p.category)));
+      categoriesEl.innerHTML = '';
+      const all = document.createElement('div'); 
+      all.className='chip active'; 
+      all.textContent='All'; 
+      all.addEventListener('click',()=>{setActiveCategory('All')}); 
+      categoriesEl.appendChild(all);
+      cats.forEach(c=>{
+        const el = document.createElement('div'); 
+        el.className='chip'; 
+        el.textContent=c; 
+        el.addEventListener('click',()=>setActiveCategory(c)); 
+        categoriesEl.appendChild(el);
+      });
+    }
+
+    function setActiveCategory(cat){
+      Array.from(categoriesEl.children).forEach(ch=>ch.classList.remove('active'));
+      const found = Array.from(categoriesEl.children).find(ch=>ch.textContent===cat) || categoriesEl.children[0];
+      if(found) found.classList.add('active');
+      applyFilters();
+    }
+
+    function applyFilters(){
+      const q = (searchEl.value||'').toLowerCase().trim();
+      const activeCatEl = Array.from(categoriesEl.children).find(ch=>ch.classList.contains('active'));
+      const activeCat = activeCatEl && activeCatEl.textContent!=='All' ? activeCatEl.textContent : null;
+      const min = parseFloat(document.getElementById('min-price').value) || 0;
+      const maxVal = document.getElementById('max-price').value;
+      const max = maxVal ? parseFloat(maxVal) : Infinity;
+
+      state.filtered = state.products.filter(p=>{
+        if(activeCat && p.category!==activeCat) return false;
+        if(q && !(p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q))) return false;
+        if(p.price < min || p.price > max) return false;
+        return true;
+      });
+      renderProducts();
+    }
+
+    function renderProducts(){
+      productsEl.innerHTML = '';
+      resultCount.textContent = state.filtered.length;
+      state.filtered.forEach(p=>{
+        const card = document.createElement('div'); card.className='card';
+        card.innerHTML = `
+          <div class="media"><img src="${p.img}" alt="${p.name}"></div>
+          <div class="title">${p.name}</div>
+          <div class="meta">${p.category} • 700-750ml</div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="price">${p.price}ks</div>
+            <div class="actions">
+              <button class="ghost" data-id="${p.id}">Details</button>
+              <button class="add" data-id="${p.id}">Add</button>
+            </div>
+          </div>
+        `;
+        productsEl.appendChild(card);
+      });
+      Array.from(document.querySelectorAll('.add')).forEach(b=>b.onclick = ()=>addToCart(parseInt(b.dataset.id)));
+      Array.from(document.querySelectorAll('.ghost')).forEach(b=>b.onclick = ()=>showDetails(parseInt(b.dataset.id)));
+    }
+
+    function showDetails(id){
+      const p = state.products.find(x=>x.id===id);
+      if(!p) return;
+      alert(p.name + '\nCategory: ' + p.category + '\nPrice: ' + p.price + 'ks\n\nThis is a demo product.');
+    }
+
+    function addToCart(id){
+      const p = state.products.find(x=>x.id===id);
+      if(!p) return;
+      if(!state.cart[id]) state.cart[id] = {...p, qty:0};
+      state.cart[id].qty += 1;
+      syncCartUI();
+    }
+
+    function changeQty(id, delta){
+      if(!state.cart[id]) return;
+      state.cart[id].qty += delta;
+      if(state.cart[id].qty <= 0) delete state.cart[id];
+      syncCartUI();
+    }
+
+    function syncCartUI(){
+      const items = Object.values(state.cart);
+      cartItemsEl.innerHTML = '';
+      if(items.length === 0){ cartItemsEl.innerHTML = '<div class="empty">Your cart is empty</div>' }
+      items.forEach(it=>{
+        const row = document.createElement('div'); row.className='cart-row';
+        row.innerHTML = `
+          <div style="flex:1">
+            <div style="font-weight:700">${it.name}</div>
+            <div style="font-size:13px;color:var(--muted)">${it.category}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:700">${it.price*it.qty}ks</div>
+            <div class="qty" style="margin-top:6px">
+              <button data-id="${it.id}" class="decrease">-</button>
+              <div style="min-width:24px;text-align:center">${it.qty}</div>
+              <button data-id="${it.id}" class="increase">+</button>
+            </div>
+          </div>
+        `;
+        cartItemsEl.appendChild(row);
+      });
+      Array.from(document.querySelectorAll('.increase')).forEach(b=>b.onclick = ()=>changeQty(b.dataset.id*1, +1));
+      Array.from(document.querySelectorAll('.decrease')).forEach(b=>b.onclick = ()=>changeQty(b.dataset.id*1, -1));
+
+      cartCountEl.textContent = items.reduce((s,i)=>s+i.qty,0);
+      openCartBtn.textContent = `Cart (${cartCountEl.textContent})`;
+      cartTotalEl.textContent = items.reduce((s,i)=>s + i.qty*i.price,0) + 'ks';
+    }
+
+    document.getElementById('apply-filters').addEventListener('click', applyFilters);
+    document.getElementById('clear-filters').addEventListener('click', ()=>{document.getElementById('min-price').value='';document.getElementById('max-price').value='';searchEl.value='';setActiveCategory('All')});
+    searchEl.addEventListener('input', ()=>applyFilters());
+    document.getElementById('checkout-btn').addEventListener('click', ()=>{
+      const items = Object.values(state.cart);
+      if(items.length===0){ alert('Cart is empty'); return; }
+      const total = items.reduce((s,i)=>s + i.qty*i.price,0);
+      if(confirm(`Proceed to checkout?\nTotal: ${total}ks\n\nNote: This is a demo checkout. Implement payment & legal age verification in production.`)){
+        state.cart = {}; syncCartUI(); alert('Thank you! Your order has been placed (demo).');
+      }
+    });
+    openCartBtn.addEventListener('click', ()=>{
+      const cart = document.querySelector('.cart');
+      cart.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+
+    renderCategories();
+    renderProducts();
+    syncCartUI();
+  </script>
+</body>
+</html>
