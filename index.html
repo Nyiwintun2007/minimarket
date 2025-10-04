@@ -113,6 +113,7 @@
         display: flex;
         flex-direction: column;
         gap: 8px;
+        min-width: 0;
       }
       .media {
         height: 130px;
@@ -129,36 +130,52 @@
       }
       .title {
         font-weight: 600;
-        font-size: 15px;
+        font-size: 14px;
+        line-height: 1.3;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
       }
       .meta {
-        font-size: 13px;
+        font-size: 12px;
         color: var(--muted);
       }
       .price {
         font-weight: 700;
+        font-size: 15px;
+        margin-bottom: 8px;
       }
       .actions {
         margin-top: auto;
         display: flex;
-        gap: 8px;
+        gap: 6px;
         align-items: center;
+        width: 100%;
       }
       button.add {
         flex: 1;
-        padding: 8px;
+        padding: 7px 8px;
         border-radius: 8px;
         border: none;
         background: var(--accent);
         color: white;
         cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+        min-width: 0;
       }
       button.ghost {
-        padding: 8px;
+        padding: 7px 8px;
         border-radius: 8px;
         border: 1px solid #e5e7eb;
         background: transparent;
         cursor: pointer;
+        font-size: 12px;
+        white-space: nowrap;
+        min-width: 0;
       }
       .cart {
         position: sticky;
@@ -208,139 +225,151 @@
         text-align: center;
         color: var(--muted);
       }
-      /* Modal Styles */
-      .modal {
-        display: none;
+      /* Toast Notification Styles */
+      .toast-container {
         position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        animation: fadeIn 0.3s;
-      }
-      .modal.active {
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
         display: flex;
-        align-items: center;
-        justify-content: center;
+        flex-direction: column;
+        gap: 12px;
+        max-width: 400px;
       }
-      .modal-content {
+      .toast {
         background: white;
-        border-radius: 16px;
-        padding: 32px;
-        max-width: 500px;
-        width: 90%;
-        max-height: 90vh;
-        overflow-y: auto;
-        position: relative;
-        animation: slideUp 0.3s;
-      }
-      .modal-header {
+        border-radius: 12px;
+        padding: 16px 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15),
+          0 0 0 1px rgba(0, 0, 0, 0.05);
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-bottom: 24px;
-      }
-      .modal-header h2 {
-        margin: 0;
-        color: #111;
-        font-size: 24px;
-      }
-      .close-btn {
-        background: transparent;
-        border: none;
-        font-size: 28px;
+        gap: 14px;
+        animation: slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         cursor: pointer;
-        color: #6b7280;
-        padding: 0;
-        width: 32px;
-        height: 32px;
+        transition: all 0.3s;
+        border-left: 4px solid var(--accent);
+      }
+      .toast:hover {
+        transform: translateX(-5px);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+      }
+      .toast.removing {
+        animation: slideOutRight 0.3s ease-in forwards;
+      }
+      .toast-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 8px;
-        transition: all 0.2s;
-      }
-      .close-btn:hover {
-        background: #f3f4f6;
-        color: #111;
-      }
-      .contact-grid {
-        display: grid;
-        gap: 16px;
-      }
-      .contact-item {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        padding: 16px;
-        background: #f9fafb;
-        border-radius: 12px;
-        text-decoration: none;
-        color: #111;
-        transition: all 0.2s;
-        border: 2px solid transparent;
-      }
-      .contact-item:hover {
-        background: #f3f4f6;
-        border-color: var(--accent);
-        transform: translateY(-2px);
-      }
-      .contact-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
+        font-size: 20px;
         flex-shrink: 0;
       }
-      .contact-icon.telegram {
-        background: #0088cc;
+      .toast-icon.telegram {
+        background: linear-gradient(135deg, #0088cc, #00a0e9);
         color: white;
       }
-      .contact-icon.facebook {
-        background: #1877f2;
+      .toast-icon.facebook {
+        background: linear-gradient(135deg, #1877f2, #4267b2);
         color: white;
       }
-      .contact-icon.phone {
-        background: #10b981;
+      .toast-icon.phone {
+        background: linear-gradient(135deg, #10b981, #059669);
         color: white;
       }
-      .contact-icon.viber {
-        background: #7360f2;
+      .toast-icon.viber {
+        background: linear-gradient(135deg, #7360f2, #5b4cdb);
         color: white;
       }
-      .contact-info {
+      .toast-content {
         flex: 1;
+        min-width: 0;
       }
-      .contact-label {
-        font-size: 13px;
-        color: var(--muted);
+      .toast-title {
+        font-weight: 700;
+        font-size: 14px;
+        color: #111;
         margin-bottom: 4px;
       }
-      .contact-value {
-        font-weight: 600;
-        font-size: 15px;
+      .toast-message {
+        font-size: 13px;
+        color: var(--muted);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
-      @keyframes fadeIn {
+      .toast-close {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f3f4f6;
+        color: #6b7280;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.2s;
+        flex-shrink: 0;
+      }
+      .toast-close:hover {
+        background: #e5e7eb;
+        color: #111;
+      }
+      @keyframes slideInRight {
         from {
+          transform: translateX(400px);
           opacity: 0;
         }
         to {
+          transform: translateX(0);
           opacity: 1;
         }
       }
-      @keyframes slideUp {
+      @keyframes slideOutRight {
         from {
-          transform: translateY(20px);
-          opacity: 0;
+          transform: translateX(0);
+          opacity: 1;
         }
         to {
-          transform: translateY(0);
+          transform: translateX(400px);
+          opacity: 0;
+        }
+      }
+      /* Enhanced Card Hover Effects */
+      .card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(107, 45, 255, 0.15);
+      }
+      /* Enhanced Button Styles */
+      button.add:hover {
+        background: #5a1fd9;
+        transform: scale(1.02);
+      }
+      button.ghost:hover {
+        background: #f9fafb;
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      /* Smooth Transitions */
+      button,
+      .chip,
+      .contact-item {
+        transition: all 0.2s ease;
+      }
+      /* Loading Animation */
+      @keyframes pulse {
+        0%,
+        100% {
           opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
         }
       }
 
@@ -380,18 +409,19 @@
           font-size: 13px;
           padding: 8px 10px !important;
         }
-        .modal-content {
-          padding: 24px;
-          width: 95%;
+        .toast-container {
+          top: 10px;
+          right: 10px;
+          left: 10px;
+          max-width: none;
         }
-        .contact-item {
-          padding: 12px;
-          gap: 12px;
+        .toast {
+          padding: 14px 16px;
         }
-        .contact-icon {
-          width: 40px;
-          height: 40px;
-          font-size: 20px;
+        .toast-icon {
+          width: 38px;
+          height: 38px;
+          font-size: 18px;
         }
       }
       @media (max-width: 640px) {
@@ -547,53 +577,8 @@
       </aside>
     </main>
 
-    <!-- Contact Modal -->
-    <div id="contact-modal" class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Contact Us</h2>
-          <button class="close-btn" id="close-modal">&times;</button>
-        </div>
-        <div class="contact-grid">
-          <a
-            href="https://t.me/yourusername"
-            target="_blank"
-            class="contact-item"
-          >
-            <div class="contact-icon telegram">📱</div>
-            <div class="contact-info">
-              <div class="contact-label">Telegram</div>
-              <div class="contact-value">@yourusername</div>
-            </div>
-          </a>
-          <a
-            href="https://facebook.com/yourpage"
-            target="_blank"
-            class="contact-item"
-          >
-            <div class="contact-icon facebook">👤</div>
-            <div class="contact-info">
-              <div class="contact-label">Facebook</div>
-              <div class="contact-value">Mini Market Liquor</div>
-            </div>
-          </a>
-          <a href="tel:+959123456789" class="contact-item">
-            <div class="contact-icon phone">📞</div>
-            <div class="contact-info">
-              <div class="contact-label">Phone</div>
-              <div class="contact-value">+95 9 123 456 789</div>
-            </div>
-          </a>
-          <a href="viber://chat?number=+959123456789" class="contact-item">
-            <div class="contact-icon viber">💬</div>
-            <div class="contact-info">
-              <div class="contact-label">Viber</div>
-              <div class="contact-value">+95 9 123 456 789</div>
-            </div>
-          </a>
-        </div>
-      </div>
-    </div>
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
 
     <footer>
       Mini Market — Liquor Store — please obey local laws when selling alcohol.
@@ -818,12 +803,10 @@
           <div class="media"><img src="${p.img}" alt="${p.name}"></div>
           <div class="title">${p.name}</div>
           <div class="meta">${p.category}</div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div class="price">${formatKs(p.price)}</div>
-            <div class="actions">
-              <button class="ghost" data-id="${p.id}">Details</button>
-              <button class="add" data-id="${p.id}">Add</button>
-            </div>
+          <div class="price">${formatKs(p.price)}</div>
+          <div class="actions">
+            <button class="ghost" data-id="${p.id}">Details</button>
+            <button class="add" data-id="${p.id}">Add</button>
           </div>
         `;
           productsEl.appendChild(card);
@@ -935,29 +918,96 @@
           .scrollIntoView({ behavior: "smooth", block: "center" });
       });
 
-      // Contact Modal functionality
-      const contactModal = document.getElementById("contact-modal");
+      // Toast Notification System
+      const toastContainer = document.getElementById("toast-container");
       const contactBtn = document.getElementById("contact-btn");
-      const closeModalBtn = document.getElementById("close-modal");
+
+      const contactInfo = [
+        {
+          type: "telegram",
+          icon: "📱",
+          title: "Telegram",
+          message: "@yourusername",
+          link: "https://t.me/yourusername",
+        },
+        {
+          type: "facebook",
+          icon: "👤",
+          title: "Facebook",
+          message: "Mini Market Liquor",
+          link: "https://facebook.com/yourpage",
+        },
+        {
+          type: "phone",
+          icon: "📞",
+          title: "Phone",
+          message: "+95 9 123 456 789",
+          link: "tel:+959123456789",
+        },
+        {
+          type: "viber",
+          icon: "💬",
+          title: "Viber",
+          message: "+95 9 123 456 789",
+          link: "viber://chat?number=+959123456789",
+        },
+      ];
+
+      function createToast(contact, delay = 0) {
+        setTimeout(() => {
+          const toast = document.createElement("div");
+          toast.className = "toast";
+          toast.innerHTML = `
+            <div class="toast-icon ${contact.type}">${contact.icon}</div>
+            <div class="toast-content">
+              <div class="toast-title">${contact.title}</div>
+              <div class="toast-message">${contact.message}</div>
+            </div>
+            <div class="toast-close">×</div>
+          `;
+
+          // Click toast to open link
+          toast.addEventListener("click", (e) => {
+            if (!e.target.classList.contains("toast-close")) {
+              window.open(contact.link, "_blank");
+            }
+          });
+
+          // Close button
+          const closeBtn = toast.querySelector(".toast-close");
+          closeBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            removeToast(toast);
+          });
+
+          toastContainer.appendChild(toast);
+
+          // Auto remove after 5 seconds
+          setTimeout(() => {
+            if (toast.parentElement) {
+              removeToast(toast);
+            }
+          }, 5000);
+        }, delay);
+      }
+
+      function removeToast(toast) {
+        toast.classList.add("removing");
+        setTimeout(() => {
+          if (toast.parentElement) {
+            toast.remove();
+          }
+        }, 300);
+      }
 
       contactBtn.addEventListener("click", () => {
-        contactModal.classList.add("active");
-      });
+        // Clear existing toasts
+        toastContainer.innerHTML = "";
 
-      closeModalBtn.addEventListener("click", () => {
-        contactModal.classList.remove("active");
-      });
-
-      contactModal.addEventListener("click", (e) => {
-        if (e.target === contactModal) {
-          contactModal.classList.remove("active");
-        }
-      });
-
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && contactModal.classList.contains("active")) {
-          contactModal.classList.remove("active");
-        }
+        // Show all contact toasts with staggered animation
+        contactInfo.forEach((contact, index) => {
+          createToast(contact, index * 150);
+        });
       });
 
       renderCategories();
